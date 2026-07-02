@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#0a0f1e;--navy2:#0f1729;--teal:#00d4aa;
+    --gold:#f59e0b;--coral:#ff6b6b;
+    --card:#111827;--card2:#1a2235;--border:#1e2d4a;
+    --txt:#e2e8f0;--txt2:#94a3b8;--txt3:#64748b;
+    --green:#10b981;--blue:#3b82f6;
+  }
+  body{background:var(--navy);color:var(--txt);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;}
+  .hero{position:relative;padding:3rem 1.5rem 2rem;text-align:center;border-bottom:1px solid var(--border);overflow:hidden;}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,212,170,.08) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 80% 50%,rgba(124,58,237,.06) 0%,transparent 70%);pointer-events:none;}
+  .grid-lines{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.3;pointer-events:none;}
+  .badge{display:inline-block;background:rgba(0,212,170,.12);color:var(--teal);border:1px solid rgba(0,212,170,.3);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600;letter-spacing:.08em;margin-bottom:1rem;text-transform:uppercase;}
+  .hero h1{font-family:'Orbitron',monospace;font-size:clamp(1.6rem,4vw,2.8rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:.5rem;text-shadow:0 0 40px rgba(0,212,170,.3);}
+  .hero h1 span{color:var(--teal);}
+  .hero-sub{font-size:1rem;color:var(--txt2);margin-bottom:1.5rem;font-weight:300;}
+  .hero-meta{display:flex;justify-content:center;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;}
+  .chip{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--txt2);}
+  .chip i{color:var(--teal);}
+  .stat-row{display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;}
+  .stat{text-align:center;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:.75rem 1.25rem;}
+  .stat-num{font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:700;color:var(--teal);}
+  .stat-lbl{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
+  .contact-row{display:flex;justify-content:center;flex-wrap:wrap;gap:.75rem;}
+  .contact-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:500;border:1px solid;cursor:pointer;text-decoration:none;transition:all .2s;}
+  .contact-btn.primary{background:var(--teal);border-color:var(--teal);color:#0a0f1e;}
+  .contact-btn.outline{background:transparent;border-color:var(--border);color:var(--txt2);}
+  .contact-btn:hover{opacity:.85;transform:translateY(-1px);}
+  .nav{display:flex;gap:.25rem;padding:.75rem 1rem;border-bottom:1px solid var(--border);overflow-x:auto;background:var(--navy2);position:sticky;top:0;z-index:10;}
+  .nav::-webkit-scrollbar{height:0;}
+  .nav-btn{flex-shrink:0;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;border:1px solid transparent;background:transparent;color:var(--txt3);cursor:pointer;transition:all .15s;white-space:nowrap;}
+  .nav-btn:hover{color:var(--txt);background:var(--card);}
+  .nav-btn.active{background:rgba(0,212,170,.12);border-color:rgba(0,212,170,.3);color:var(--teal);}
+  .section{display:none;padding:1.5rem;}
+  .section.active{display:block;}
+  .section-title{font-family:'Orbitron',monospace;font-size:.8rem;font-weight:700;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+  .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;}
+  .project-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;transition:all .2s;position:relative;overflow:hidden;}
+  .project-card.featured{border-color:rgba(0,212,170,.4);background:#0d1c14;}
+  .project-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:0;transition:opacity .2s;}
+  .project-card.featured::before{opacity:1;}
+  .project-card:hover{border-color:rgba(0,212,170,.3);transform:translateY(-2px);}
+  .project-card:hover::before{opacity:1;}
+  .featured-banner{background:var(--teal);color:#0a0f1e;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:6px;display:inline-block;margin-bottom:.6rem;}
+  .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;}
+  .card-num{font-family:'Orbitron',monospace;font-size:.65rem;color:var(--txt3);background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;}
+  .card-num.gold{color:var(--gold);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08);}
+  .tags{display:flex;flex-wrap:wrap;gap:4px;}
+  .tag{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:500;}
+  .tag.multi{background:rgba(0,212,170,.12);color:var(--teal);border:1px solid rgba(0,212,170,.2);}
+  .tag.solo{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.2);}
+  .tag.lead{background:rgba(245,158,11,.12);color:var(--gold);border:1px solid rgba(245,158,11,.2);}
+  .tag.shipped{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2);}
+  .tag.ongoing{background:rgba(255,107,107,.12);color:var(--coral);border:1px solid rgba(255,107,107,.2);}
+  .tag.arcade{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.2);}
+  .tag.roblox{background:rgba(220,38,38,.15);color:#f87171;border:1px solid rgba(220,38,38,.25);}
+  .card-title{font-size:1rem;font-weight:600;color:#fff;margin-bottom:.4rem;line-height:1.3;}
+  .card-meta{font-size:11px;color:var(--txt3);margin-bottom:.6rem;}
+  .card-desc{font-size:12.5px;color:var(--txt2);line-height:1.6;margin-bottom:.75rem;}
+  .card-tech{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.75rem;}
+  .tech-pill{font-size:10px;padding:2px 8px;border-radius:6px;background:var(--card2);border:1px solid var(--border);color:var(--txt3);}
+  .card-points{list-style:none;margin-bottom:.75rem;}
+  .card-points li{font-size:11.5px;color:var(--txt2);padding:2px 0 2px 14px;position:relative;line-height:1.5;}
+  .card-points li::before{content:'▸';position:absolute;left:0;color:var(--teal);font-size:10px;top:3px;}
+  .card-links{display:flex;flex-wrap:wrap;gap:.5rem;}
+  .link-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--teal);text-decoration:none;border:1px solid rgba(0,212,170,.25);background:rgba(0,212,170,.06);border-radius:6px;padding:4px 10px;transition:all .15s;}
+  .link-btn:hover{background:rgba(0,212,170,.15);}
+  .filter-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem;}
+  .filter-btn{font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--txt3);cursor:pointer;transition:all .15s;}
+  .filter-btn:hover,.filter-btn.on{background:rgba(0,212,170,.1);border-color:rgba(0,212,170,.3);color:var(--teal);}
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;}
+  .skill-group{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+  .skill-group-title{font-size:11px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;display:flex;align-items:center;gap:6px;}
+  .skill-list{display:flex;flex-wrap:wrap;gap:6px;}
+  .skill-tag{font-size:11px;padding:3px 10px;border-radius:6px;background:var(--card2);border:1px solid var(--border);color:var(--txt2);}
+  .skill-tag.highlight{background:rgba(0,212,170,.1);border-color:rgba(0,212,170,.2);color:var(--teal);}
+  .timeline{position:relative;padding-left:1.5rem;}
+  .timeline::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:1px;background:var(--border);}
+  .tl-item{position:relative;padding-bottom:1.5rem;}
+  .tl-dot{position:absolute;left:-1.55rem;top:4px;width:10px;height:10px;border-radius:50%;border:2px solid var(--teal);background:var(--navy);}
+  .tl-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem;margin-bottom:.4rem;}
+  .tl-title{font-weight:600;color:#fff;font-size:.95rem;}
+  .tl-company{font-size:.8rem;color:var(--teal);}
+  .tl-date{font-size:.75rem;color:var(--txt3);}
+  .tl-body{font-size:12.5px;color:var(--txt2);line-height:1.6;}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  @media(max-width:560px){.about-grid{grid-template-columns:1fr;}}
+  .about-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem;}
+  .about-card-title{font-size:11px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;}
+  .about-card p{font-size:12.5px;color:var(--txt2);line-height:1.7;}
+  .highlight-num{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;color:var(--teal);}
+  .footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);font-size:11px;color:var(--txt3);}
+  .footer a{color:var(--teal);text-decoration:none;}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="grid-lines"></div>
+  <div style="position:relative;z-index:1;">
+    <div class="badge">Unity Game Developer</div>
+    <h1>ANKIT <span>SHANKAR</span><br>SHIVAM</h1>
+    <p class="hero-sub">Senior Unity Developer · 6+ Years · 14+ Projects</p>
+    <div class="hero-meta">
+      <div class="chip"><i class="ti ti-map-pin" aria-hidden="true"></i>Dehradun, India</div>
+      <div class="chip"><i class="ti ti-device-mobile-game" aria-hidden="true"></i>Mobile · PC · Arcade</div>
+      <div class="chip"><i class="ti ti-brand-unity" aria-hidden="true"></i>Unity 3D / 2D</div>
+      <div class="chip"><i class="ti ti-users" aria-hidden="true"></i>Multiplayer Specialist</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num">6+</div><div class="stat-lbl">Years Exp</div></div>
+      <div class="stat"><div class="stat-num">14+</div><div class="stat-lbl">Projects</div></div>
+      <div class="stat"><div class="stat-num">5+</div><div class="stat-lbl">Live on Stores</div></div>
+      <div class="stat"><div class="stat-num">10+</div><div class="stat-lbl">SDKs Integrated</div></div>
+    </div>
+    <div class="contact-row">
+      <a class="contact-btn primary" href="mailto:shrivastava.ankit789@gmail.com">
+        <i class="ti ti-mail" aria-hidden="true"></i>shrivastava.ankit789@gmail.com
+      </a>
+      <div class="contact-btn outline">
+        <i class="ti ti-phone" aria-hidden="true"></i>+91-8171980429
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="show('projects',this)"><i class="ti ti-layout-grid" aria-hidden="true"></i> Projects</button>
+  <button class="nav-btn" onclick="show('skills',this)"><i class="ti ti-code" aria-hidden="true"></i> Skills</button>
+  <button class="nav-btn" onclick="show('experience',this)"><i class="ti ti-timeline" aria-hidden="true"></i> Experience</button>
+  <button class="nav-btn" onclick="show('about',this)"><i class="ti ti-user" aria-hidden="true"></i> About</button>
+</nav>
+
+<div id="projects" class="section active">
+  <div class="section-title"><i class="ti ti-layout-grid" aria-hidden="true"></i>All Projects</div>
+  <div class="filter-row">
+    <button class="filter-btn on" onclick="filterProjects('all',this)">All (14)</button>
+    <button class="filter-btn" onclick="filterProjects('multiplayer',this)">Multiplayer</button>
+    <button class="filter-btn" onclick="filterProjects('solo',this)">Solo</button>
+    <button class="filter-btn" onclick="filterProjects('lead',this)">Lead Role</button>
+    <button class="filter-btn" onclick="filterProjects('shipped',this)">Live on Store</button>
+    <button class="filter-btn" onclick="filterProjects('roblox',this)">Roblox</button>
+  </div>
+  <div class="projects-grid" id="projectsGrid"></div>
+</div>
+
+<div id="skills" class="section">
+  <div class="section-title"><i class="ti ti-code" aria-hidden="true"></i>Technical Skills</div>
+  <div class="skills-grid">
+    <div class="skill-group">
+      <div class="skill-group-title"><i class="ti ti-brand-unity" aria-hidden="true"></i>Game Engine</div>
+      <div class="skill-list">
+        <span class="skill-tag highlight">Unity 3D</span><span class="skill-tag highlight">Unity 2D</span>
+        <span class="skill-tag highlight">Roblox Studio</span>
+        <span class="skill-tag">Unity Animator</span><span class="skill-tag">Cinemachine</span>
+        <span class="skill-tag">Timeline</span><span class="skill-tag">Asset Bundles</span>
+        <span class="skill-tag">ScriptableObjects</span><span class="skill-tag">Terra Studio</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title"><i class="ti ti-terminal" aria-hidden="true"></i>Languages</div>
+      <div class="skill-list">
+        <span class="skill-tag highlight">C# (Advanced)</span><span class="skill-tag highlight">Lua (Roblox)</span>
+        <span class="skill-tag">JSON</span><span class="skill-tag">REST API</span><span class="skill-tag">Socket.IO</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title"><i class="ti ti-network" aria-hidden="true"></i>Multiplayer / Networking</div>
+      <div class="skill-list">
+        <span class="skill-tag highlight">Photon Fusion</span><span class="skill-tag highlight">Colyseus</span>
+        <span class="skill-tag">NetworkTransform</span><span class="skill-tag">NetworkRigidbody3D</span>
+        <span class="skill-tag">Server-Authoritative Logic</span><span class="skill-tag">Global Matchmaking</span>
+        <span class="skill-tag">Private Rooms</span><span class="skill-tag">Reconnection Handling</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title"><i class="ti ti-puzzle" aria-hidden="true"></i>Third-Party SDKs</div>
+      <div class="skill-list">
+        <span class="skill-tag highlight">Firebase</span><span class="skill-tag highlight">Agora (Voice + Chat)</span>
+        <span class="skill-tag">Google AdMob</span><span class="skill-tag">Play Store IAP</span>
+        <span class="skill-tag">App Store IAP</span><span class="skill-tag">Facebook SDK</span>
+        <span class="skill-tag">Apple Sign-In</span><span class="skill-tag">Native Sharing</span>
+        <span class="skill-tag">FCM Push Notifications</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title"><i class="ti ti-device-mobile" aria-hidden="true"></i>Platforms</div>
+      <div class="skill-list">
+        <span class="skill-tag highlight">Android</span><span class="skill-tag highlight">iOS</span>
+        <span class="skill-tag highlight">Roblox</span>
+        <span class="skill-tag">PC</span><span class="skill-tag">Arcade Machine</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title"><i class="ti ti-git-branch" aria-hidden="true"></i>Dev Tools</div>
+      <div class="skill-list">
+        <span class="skill-tag">Visual Studio 2019/22</span><span class="skill-tag">Roblox Studio</span>
+        <span class="skill-tag">GitHub</span><span class="skill-tag">SourceTree</span>
+        <span class="skill-tag">Unity Build Pipeline</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title"><i class="ti ti-brain" aria-hidden="true"></i>Specialisations</div>
+      <div class="skill-list">
+        <span class="skill-tag highlight">Bot / Enemy AI Logic</span>
+        <span class="skill-tag">Beat-Sync Key Generation</span><span class="skill-tag">UI/UX Architecture</span>
+        <span class="skill-tag">Obstacle & Level Design</span>
+        <span class="skill-tag">Arabic Localisation</span><span class="skill-tag">Arcade Hardware Optimisation</span>
+        <span class="skill-tag">Mobile Performance</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title"><i class="ti ti-users" aria-hidden="true"></i>Soft Skills</div>
+      <div class="skill-list">
+        <span class="skill-tag">Team Leadership</span><span class="skill-tag">Client Communication</span>
+        <span class="skill-tag">Agile / Sprint Planning</span><span class="skill-tag">Cross-functional Collaboration</span>
+        <span class="skill-tag">Solo Full-Cycle Dev</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="experience" class="section">
+  <div class="section-title"><i class="ti ti-timeline" aria-hidden="true"></i>Work Experience</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-head">
+        <span class="tl-title">Senior Unity Game Developer</span>
+        <span class="tl-company">Logic Simplified Pvt. Ltd.</span>
+        <span class="tl-date">Jan 2020 – Present (6+ yrs)</span>
+      </div>
+      <div class="tl-body">
+        Dehradun, India — Delivered 14+ projects across mobile, PC, Roblox, and arcade platforms.<br><br>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;">
+          <li style="padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--teal);">▸</span>Led front-end architecture on Gulf Ludo, a live Arabic multiplayer game with active user base.</li>
+          <li style="padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--teal);">▸</span>Built real-time multiplayer systems using Photon Fusion and Colyseus with server-authoritative logic.</li>
+          <li style="padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--teal);">▸</span>Integrated 10+ SDKs: Firebase, Agora, AdMob, Apple/Google IAP, Facebook across multiple live products.</li>
+          <li style="padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--teal);">▸</span>Solo-developed Royal Maratha (live on Play Store), Chess Master, Sky Runner (Roblox), and Manas Games platform.</li>
+          <li style="padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--teal);">▸</span>Optimised performance for arcade hardware (Wild Heist) and low-end mobile (Royal Maratha).</li>
+          <li style="padding-left:14px;position:relative;"><span style="position:absolute;left:0;color:var(--teal);">▸</span>Mentored junior devs; coordinated with art teams, clients, and project managers.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="section-title" style="margin-top:2rem;"><i class="ti ti-school" aria-hidden="true"></i>Education</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-head">
+        <span class="tl-title">B.Tech — Computer Science</span>
+        <span class="tl-company">Shivalik College of Engineering</span>
+        <span class="tl-date">Dehradun, India</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="about" class="section">
+  <div class="section-title"><i class="ti ti-user" aria-hidden="true"></i>About Me</div>
+  <div class="about-grid">
+    <div class="about-card" style="grid-column:1/-1;">
+      <div class="about-card-title">Who I am</div>
+      <p>I'm a results-driven Unity Game Developer with <strong style="color:#fff;">6+ years</strong> of experience shipping 14+ projects across mobile (Android/iOS), PC, arcade hardware, and Roblox. My flagship solo project <strong style="color:#fff;">Royal Maratha</strong> is live on Google Play. I specialise in <strong style="color:#fff;">real-time multiplayer</strong> (Photon Fusion, Colyseus), full-stack Unity ownership, and making things actually work in production.</p>
+    </div>
+    <div class="about-card">
+      <div class="about-card-title">What makes me different</div>
+      <p><span class="highlight-num">14+</span> projects across Unity, Roblox & Arcade.<br><br>Full ownership: architecture → gameplay → SDK integration → store launch.<br><br>Multiplayer expert: server-authoritative Colyseus + Photon Fusion.<br><br>Cross-platform: mobile, PC, arcade, and Roblox.</p>
+    </div>
+    <div class="about-card">
+      <div class="about-card-title">Contact</div>
+      <p>
+        <i class="ti ti-mail" style="color:var(--teal);margin-right:6px;" aria-hidden="true"></i>shrivastava.ankit789@gmail.com<br><br>
+        <i class="ti ti-phone" style="color:var(--teal);margin-right:6px;" aria-hidden="true"></i>+91-8171980429<br><br>
+        <i class="ti ti-map-pin" style="color:var(--teal);margin-right:6px;" aria-hidden="true"></i>Dehradun, Uttarakhand, India<br><br>
+        <i class="ti ti-world" style="color:var(--teal);margin-right:6px;" aria-hidden="true"></i><a href="https://ankitshrivastava123.github.io/AnkitShivamPortfolio/" target="_blank" style="color:var(--teal);">ankitshrivastava123.github.io/AnkitShivamPortfolio</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Portfolio of <strong style="color:var(--txt);">Ankit Shankar Shivam</strong> ·
+  <a href="mailto:shrivastava.ankit789@gmail.com">shrivastava.ankit789@gmail.com</a>
+</div>
+
+<script>
+const PROJECTS=[
+  {
+    num:"01",featured:true,
+    title:"Royal Maratha — Endless Runner",
+    role:"Solo Developer",duration:"Apr 2025 – Present",
+    desc:"Action-adventure endless runner where the protagonist fights enemies and conquers forts by raising flags at each level end. Built entirely solo — design, code, UI, and optimization.",
+    tech:["Unity 3D","C#","Unity Animator","Timeline"],
+    tags:["solo","ongoing","shipped"],
+    points:[
+      "Procedural level generation with dynamic enemy, obstacle, and power-up spawning.",
+      "Responsive melee combat, health system, and enemy AI behaviour trees.",
+      "Flag-raising victory system with animations and sound effects.",
+      "Boss cutscenes choreographed via Unity Animator and Timeline.",
+      "Scene transitions, checkpoints, and save system for seamless experience.",
+      "Optimised for low-end mobile — smooth performance across device tiers.",
+    ],
+    links:[
+      {label:"Android",icon:"ti-brand-google-play",url:"https://play.google.com/store/apps/details?id=com.harshal.royalmaratha"},
+      {label:"Video",icon:"ti-video",url:"https://drive.google.com/file/d/1Q7Ay_ChZXz53tMwjYR6ewxDdKW8fYrQr/view"},
+    ],
+    tagLabels:[{t:"Solo Dev",c:"solo"},{t:"Live on Play Store",c:"shipped"},{t:"Ongoing",c:"ongoing"}]
+  },
+  {num:"02",featured:false,title:"Gulf Ludo — خلیجي لودو",role:"Lead Front End Dev",duration:"Jul 2021 – Feb 2023",desc:"Feature-rich Arabic Ludo game with 2/3-player global & private matchmaking, in-game voice chat, leaderboards, gift exchange, betting spin wheel, and VIP subscriptions.",tech:["Unity 3D","C#","Agora","Firebase","AdMob","IAP"],tags:["multiplayer","lead","shipped"],points:["Led complete UI/data-flow architecture for a live production game.","Integrated Agora voice chat, world/private chat, gift-to-money exchange.","Built bot AI for offline/waiting lobbies.","Owned full SDK stack: Facebook, Firebase, AdMob, IAP, Native Sharing."],links:[{label:"Android",icon:"ti-brand-google-play",url:"https://play.google.com/store/apps/details?id=com.shebajoy.gulfludo"},{label:"iOS",icon:"ti-brand-apple",url:"https://apps.apple.com/US/app/id1617573237"}],tagLabels:[{t:"Multiplayer",c:"multi"},{t:"Lead Role",c:"lead"},{t:"Live",c:"shipped"}]},
+  {num:"03",featured:false,title:"Wild Heist — Arcade Car Racing",role:"Developer",duration:"Aug 2024 – Apr 2025",desc:"Fast-paced 4-player multiplayer car racing game built for arcade machines using Photon Fusion for real-time networking.",tech:["Unity 3D","C#","Photon Fusion","Cinemachine"],tags:["multiplayer","lead"],points:["NetworkTransform & NetworkRigidbody3D for real-time vehicle sync.","Vehicle physics, drifting, collision, rocket/landmine pickups.","Coin-insert logic, game timer, leaderboard — arcade-specific UX.","Local bot testing; optimised for arcade hardware frame-rate stability."],links:[{label:"Video",icon:"ti-video",url:"https://drive.google.com/file/d/1aMWeQyeQ83IrwpT-40EaYvhTsaNCo1JA/view"}],tagLabels:[{t:"Multiplayer",c:"multi"},{t:"Arcade",c:"arcade"}]},
+  {num:"04",featured:false,title:"Bingo — Turn-Based Multiplayer",role:"Developer",duration:"Shipped",desc:"2-player turn-based Bingo for mobile with AI single-player mode and Colyseus real-time online multiplayer.",tech:["Unity 3D","C#","Colyseus"],tags:["multiplayer","shipped"],points:["Server-authoritative Colyseus rooms with schema-based state sync.","Win-condition detection (lines & full house) with instant sync.","Room creation, player matching, reconnection handling."],links:[{label:"App Store",icon:"ti-brand-apple",url:"https://apps.apple.com/cg/app/sport-fusion-bingo/id1629317021"},{label:"Video",icon:"ti-video",url:"https://drive.google.com/file/d/1BC_0un6LVBfoMNzGAda022nfrmwMQx/view"}],tagLabels:[{t:"Multiplayer",c:"multi"},{t:"Live",c:"shipped"}]},
+  {num:"05",featured:false,title:"Manas Games — MultiGame Platform",role:"Solo Developer",duration:"Apr 2026 – Present",desc:"12 premium mini-games in a single modular app with shared UI navigation, scoring, progression, and analytics.",tech:["Unity 2D/3D","C#","ScriptableObjects"],tags:["solo","ongoing"],points:["Modular game framework enabling rapid integration of any mini-game.","Shared managers for UI nav, game state, scoring, and analytics.","Memory, reaction, puzzle, pattern, logic-based gameplay varieties.","Event-driven communication & modular prefabs for scalability."],links:[],tagLabels:[{t:"Solo",c:"solo"},{t:"Ongoing",c:"ongoing"}]},
+  {num:"06",featured:false,title:"Chess Master — AI Chess",role:"Solo Developer",duration:"Shipped",desc:"Full-featured Chess game with 2D/3D board views, complete rule set, and AI opponent for mobile and PC.",tech:["Unity 2D/3D","C#"],tags:["solo","shipped"],points:["Full chess rules: legal moves, check, checkmate, castling, en passant, promotion.","AI opponent with strategic gameplay; undo, move history, board reset.","Dual 2D/3D view modes; codebase structured for future multiplayer."],links:[{label:"Android",icon:"ti-brand-google-play",url:"https://play.google.com/store/apps/details?id=play.chess.meister"}],tagLabels:[{t:"Solo",c:"solo"},{t:"Live",c:"shipped"}]},
+  {num:"07",featured:false,title:"Sparks — 3D Multiplayer Dance",role:"Lead Developer",duration:"Jun 2022",desc:"4v4 real-time multiplayer dance game where players score by hitting keys in sync with music across 3 difficulty levels.",tech:["Unity 3D","C#","Beat Generation"],tags:["multiplayer","lead"],points:["Beat-synchronized key generation from live music audio.","3 difficulty levels: Easy, Medium, Hard.","Effects, animations, and core runtime performance optimisation."],links:[],tagLabels:[{t:"Multiplayer",c:"multi"},{t:"Lead Role",c:"lead"}]},
+  {num:"08",featured:false,title:"Ludo GenX",role:"Front End Developer",duration:"Jul 2020 – Jul 2021",desc:"Ludo × Uno hybrid with power dice, 7-language support, global/private matchmaking, and AI gameplay for 2–4 players.",tech:["Unity 3D","C#"],tags:["multiplayer","shipped"],points:["Power dice mechanic adds unique Uno-style abilities each turn.","AI gameplay and global/private matchmaking.","7-language localisation."],links:[{label:"iOS",icon:"ti-brand-apple",url:"https://apps.apple.com/uy/app/tree-50/id1518982697"}],tagLabels:[{t:"Multiplayer",c:"multi"},{t:"Live",c:"shipped"}]},
+  {num:"09",featured:false,title:"Prison Break — PvE FPS",role:"Project Leader",duration:"Jun – Aug 2023",desc:"First-person shooter where the player rescues prisoners before lockdown, defeating jailers and navigating obstacles.",tech:["Unity 3D","C#","Terra Studio"],tags:["lead"],points:["Led project as both developer and manager.","Terra Studio integration for level environment.","Complete UI, asset bundle, and sound systems."],links:[],tagLabels:[{t:"Lead Role",c:"lead"}]},
+  {num:"10",featured:false,title:"George Canine — Kids Learning",role:"Front End Developer",duration:"Mar – May 2023",desc:"Literacy app for kids teaching the alphabet through sight, sound, and touch. Students trace letters to reinforce learning.",tech:["Unity 3D","C#","Asset Bundles"],tags:["shipped"],points:["Asset bundle creation for modular content delivery.","Audio-visual learning flow with letter tracing interaction."],links:[{label:"Android",icon:"ti-brand-google-play",url:"https://play.google.com/store/apps/details?id=com.georgecanine.georgecanine"},{label:"iOS",icon:"ti-brand-apple",url:"https://apps.apple.com/us/app/learn-to-read-george-canine/id1164210835"}],tagLabels:[{t:"Live",c:"shipped"}]},
+  {num:"11",featured:false,title:"I Have a Meme",role:"Project Lead & Senior Dev",duration:"Aug 2023 – Jul 2024",desc:"Popular meme/funny-pictures app (LOL Pics) with large active user base averaging 20+ minutes per session.",tech:["Unity 3D","C#"],tags:["lead","shipped"],points:["Led project as senior dev and project manager.","UI, data flow, asset bundle management, and deployment."],links:[{label:"iOS",icon:"ti-brand-apple",url:"https://apps.apple.com/bg/app/memeapp-i-have-a-meme/id412629178"}],tagLabels:[{t:"Lead Role",c:"lead"},{t:"Live",c:"shipped"}]},
+  {num:"12",featured:false,title:"Fashion Mania",role:"Developer",duration:"Mar – Jul 2021",desc:"2D store simulator with 6 stores inspired by Grand Hotel Mania. Players help customers pick, try on, and buy clothes.",tech:["Unity 3D","C#"],tags:[],points:["Core gameplay loop: customer enters, selects clothes, trial room, checkout.","UI design collaboration with art team."],links:[{label:"Video",icon:"ti-video",url:"https://drive.google.com/file/d/1VLoubakCeL1v8kK5C6bKuv45MY8ZLPCJ/view"}],tagLabels:[]},
+  {num:"13",featured:false,title:"Lagos StreetBall & Tree 50",role:"Developer / Trainee",duration:"Jan – Jun 2020",desc:"Two early titles: a 3D street basketball multiplayer game (10 avatars, global matchmaking) and a 50-level tree-growing casual game.",tech:["Unity 3D","C#"],tags:["multiplayer"],points:["Lagos StreetBall: 3D multiplayer with global & private matchmaking.","Tree 50: 50 levels of casual single-player gameplay."],links:[{label:"Tree 50 iOS",icon:"ti-brand-apple",url:"https://apps.apple.com/uy/app/tree-50/id1518982697"}],tagLabels:[{t:"Multiplayer",c:"multi"}]},
+  {
+    num:"14",featured:false,
+    title:"Sky Runner — Roblox Endless Runner",
+    role:"Solo Developer",duration:"2025",
+    desc:"A high-flying endless runner built in Roblox Studio. The player races through the sky, dodging incoming obstacles and surviving as long as possible. Fast-paced, addictive gameplay with smooth controls.",
+    tech:["Roblox Studio","Lua"],
+    tags:["solo","roblox"],
+    points:[
+      "Player runs endlessly through a sky-themed environment with dynamic obstacle spawning.",
+      "Smooth character controls with responsive obstacle detection and collision logic.",
+      "Increasing difficulty — obstacles speed up as the player survives longer.",
+      "Built entirely in Roblox Studio using Lua scripting.",
+      "Clean UI showing live score and game-over feedback.",
+    ],
+    links:[
+      {label:"Gameplay Video",icon:"ti-video",url:"https://drive.google.com/file/d/1ehLxJBbB5G-WyvDmlHy89cpucpbJ0Bp_/view?usp=sharing"},
+    ],
+    tagLabels:[{t:"Solo Dev",c:"solo"},{t:"Roblox",c:"roblox"}]
+  },
+];
+
+let activeFilter='all';
+
+function renderProjects(filter){
+  const grid=document.getElementById('projectsGrid');
+  const filtered=filter==='all'?PROJECTS:PROJECTS.filter(p=>p.tags.includes(filter));
+  grid.innerHTML=filtered.map(p=>`
+    <div class="project-card${p.featured?' featured':''}">
+      ${p.featured?'<div class="featured-banner"><i class="ti ti-star" aria-hidden="true" style="font-size:10px;margin-right:4px;"></i>Featured Project</div>':''}
+      <div class="card-header">
+        <span class="card-num${p.featured?' gold':''}">#${p.num}</span>
+        <div class="tags">${p.tagLabels.map(t=>`<span class="tag ${t.c}">${t.t}</span>`).join('')}</div>
+      </div>
+      <div class="card-title">${p.title}</div>
+      <div class="card-meta">${p.role} · ${p.duration}</div>
+      <div class="card-desc">${p.desc}</div>
+      <div class="card-tech">${p.tech.map(t=>`<span class="tech-pill">${t}</span>`).join('')}</div>
+      <ul class="card-points">${p.points.map(pt=>`<li>${pt}</li>`).join('')}</ul>
+      ${p.links.length?`<div class="card-links">${p.links.map(l=>`<a class="link-btn" href="${l.url}" target="_blank"><i class="ti ${l.icon}" aria-hidden="true"></i>${l.label}</a>`).join('')}</div>`:''}
+    </div>
+  `).join('');
+}
+
+function filterProjects(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderProjects(f);
+}
+
+function show(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+renderProjects('all');
+</script>
+</body>
+</html>
